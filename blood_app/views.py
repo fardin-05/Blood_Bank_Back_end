@@ -3,11 +3,54 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import BloodRequest, DonationHistory
-from .serializers import BloodRequestSerializer
+from .serializers import BloodRequestSerializer, DonationHistorySerializer
 
+class MyRequestAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        my_request = BloodRequest.objects.filter(created_by=request.user)
+        serializer = BloodRequestSerializer(my_request, many=True)
+
+        return Response({
+            "message":"Your Created Blood Requests",
+            "count":my_request.count(),
+            "data":serializer.data
+        },status=status.HTTP_200_OK)
+
+
+class IncomingRequestAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        my_group = request.user.blood_group
+        incoming = BloodRequest.objects.filter(blood_group_needed=my_group, status="Panding").exclude(created_by=request.user)
+        serializer = BloodRequestSerializer(incoming, many=True)
+
+        return Response({
+            "message":"Incoming Request You can accept",
+            "count": incoming.count(),
+            "data":serializer.data
+        }, status=status.HTTP_200_OK)
+    
+
+class MyDonationHistoryAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        history = DonationHistory.objects.filter(donor=request.user) | DonationHistory.objects.filter(receiver=request.user)
+        serializer = DonationHistorySerializer(history, many=True)
+
+        return Response({
+            "message":"Your Donation History",
+            "count":history.count(),
+            "data":serializer.data
+        }, status=status.HTTP_200_OK)
+    
 
 class AllBloodRequestAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request):
         requests = BloodRequest.objects.exclude(created_by=request.user)
         serializer = BloodRequestSerializer(requests, many=True)
