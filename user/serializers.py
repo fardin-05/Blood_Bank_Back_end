@@ -54,6 +54,8 @@ class DonorSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = [
             "id",
+            "first_name",
+            "last_name",
             "email",
             "age",
             "address",

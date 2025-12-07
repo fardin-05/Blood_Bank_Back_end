@@ -126,10 +126,23 @@ class ActiveUserAPIView(APIView):
 class PublicDonorListAPIView(APIView):
     def get(self, request):
         blood_group = request.query_params.get("blood_group")
+        search = request.query_params.get('search')
+        min_age = request.query_params.get('min_age')
+        max_age = request.query_params.get('max_age')
         donors = CustomUser.objects.filter(availability=True)
 
         if blood_group:
-            donors = donors.filter(blood_group=blood_group)  
+            donors = donors.filter(blood_group=blood_group)
+
+        if search:
+            donors = donors.filter(email__icontains=search)
+
+        if min_age:
+            donors = donors.filter(age__gte=min_age)
+            
+        if max_age:
+            donors = donors.filter(age__lte=max_age)
+
         serializer = DonorSerializer(donors, many=True)
         return Response(
             {
