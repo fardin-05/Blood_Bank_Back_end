@@ -2,11 +2,18 @@
 from pathlib import Path
 from decouple import config
 import dj_database_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',') if config('ALLOWED_HOSTS', default='') else ['*']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = [
+        'blood-bank-back-end.vercel.app',  
+        '127.0.0.1', 
+        '.vercel.app' 
+    ]
 
 AUTH_USER_MODEL='user.CustomUser'
 
