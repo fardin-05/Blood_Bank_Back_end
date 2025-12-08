@@ -8,8 +8,8 @@ class CustomUser(AbstractUser):
     last_name =models.CharField(max_length=100)
     email=models.EmailField(unique=True)
     address= models.TextField(blank=True, null=True)
-    phone_number=models.CharField(max_length=15, blank=False, null=False)
-    age = models.PositiveSmallIntegerField(null=False, blank=False)
+    phone_number=models.CharField(max_length=15, blank=True, null=True)
+    age = models.PositiveSmallIntegerField(null=True, blank=True)
     blood_group = models.CharField(
         max_length=5,
         choices=[
