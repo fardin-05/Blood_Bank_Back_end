@@ -8,12 +8,6 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
-if not ALLOWED_HOSTS:
-    ALLOWED_HOSTS = [
-        'blood-bank-back-end.onrender.com',  
-        '127.0.0.1', 
-        '.onrender.com' 
-    ]
 
 AUTH_USER_MODEL='user.CustomUser'
 
