@@ -1,1 +1,1 @@
-web: gunicorn blood_bank.wsgi
+web: gunicorn blood_bank.wsgi:application
