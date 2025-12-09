@@ -9,6 +9,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 import os
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(" ")
+ALLOWED_HOSTS=['*']
 
 AUTH_USER_MODEL='user.CustomUser'
 
@@ -118,8 +119,8 @@ DJOSER = {
     "SEND_ACTIVATION_EMAIL": True,
     "SEND_CONFIRMATION_EMAIL": True,
 
-    "DOMAIN": "127.0.0.1",
-    "PROTOCOL": "http",
+    "DOMAIN": "blood-bank-back-end.onrender.com",
+    "PROTOCOL": "https",
 
     "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
     "ACTIVATION_URL":  "activate/{uid}/{token}/",
