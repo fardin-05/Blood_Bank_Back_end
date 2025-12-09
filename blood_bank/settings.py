@@ -7,7 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
+import os
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(" ")
 
 AUTH_USER_MODEL='user.CustomUser'
 
@@ -117,7 +118,7 @@ DJOSER = {
     "SEND_ACTIVATION_EMAIL": True,
     "SEND_CONFIRMATION_EMAIL": True,
 
-    "DOMAIN": "127.0.0.1:8000", 
+    "DOMAIN": "127.0.0.1",
     "PROTOCOL": "http",
 
     "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
