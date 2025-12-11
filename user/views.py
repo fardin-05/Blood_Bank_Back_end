@@ -52,19 +52,16 @@ class UserListAPIView(APIView):
 
 
 class UserDetailAPIView(APIView):
-
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    #=========Helper==========
     def get_user(self, id):
         try:
             return CustomUser.objects.get(id=id)
         except CustomUser.DoesNotExist:
             return None
+    
 
-
-    #=========GET → anyone can view==========
+    # Anyone can view
     def get(self, request, id):
         user = self.get_user(id)
         if not user:
@@ -73,67 +70,63 @@ class UserDetailAPIView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data, status=200)
 
-
-    #=========CHECK OWNER==========
-    def check_owner(self, request, id):
+    # ---- OWNER CHECK ----
+    def only_owner(self, request, user):
         if not request.user.is_authenticated:
             return Response({"error": "Authentication required"}, status=401)
 
-        if request.user.id != int(id):    # <-- MAIN FIX
-            return Response({"error": "You cannot modify another user"}, status=403)
+        if request.user.id != user.id:
+            return Response({"error": "You cannot modify another user's data"}, status=403)
 
-        return None   # means OK
+        return None
 
 
-    #=========PUT==========
+    # UPDATE (PUT)
     def put(self, request, id):
-        # owner check
-        owner_check = self.check_owner(request, id)
-        if owner_check:
-            return owner_check
-
         user = self.get_user(id)
         if not user:
             return Response({"error": "User not found"}, status=404)
+
+        # 🔥 MAIN CHECK
+        owner = self.only_owner(request, user)
+        if owner:
+            return owner
 
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Updated", "data": serializer.data}, status=200)
-
+            return Response({"message": "User updated", "data": serializer.data}, status=200)
         return Response(serializer.errors, status=400)
 
-
-    #=========PATCH==========
+    # PARTIAL UPDATE (PATCH)
     def patch(self, request, id):
-        owner_check = self.check_owner(request, id)
-        if owner_check:
-            return owner_check
-
         user = self.get_user(id)
         if not user:
             return Response({"error": "User not found"}, status=404)
+
+        owner = self.only_owner(request, user)
+        if owner:
+            return owner
 
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Partially updated", "data": serializer.data}, status=200)
-
+            return Response({"message": "User partially updated", "data": serializer.data}, status=200)
         return Response(serializer.errors, status=400)
 
-
-    #=========DELETE==========
+    # DELETE
     def delete(self, request, id):
-        owner_check = self.check_owner(request, id)
-        if owner_check:
-            return owner_check
-
         user = self.get_user(id)
         if not user:
             return Response({"error": "User not found"}, status=404)
 
+        owner = self.only_owner(request, user)
+        if owner:
+            return owner
+
         user.delete()
         return Response({"message": "User deleted"}, status=200)
+
 
 #============Active User API When Activation Link Clicked=============
 User = get_user_model()
