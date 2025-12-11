@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.contrib.auth import get_user_model
 from djoser.utils import decode_uid
 from .serializers import UserSerializer, UserProfileUpdateSerializer, DonorSerializer
@@ -50,20 +52,46 @@ class UserListAPIView(APIView):
 
 
 class UserDetailAPIView(APIView):
-    #=========Helper: get user or return 404==========
+
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    #=========Helper==========
     def get_user(self, id):
         try:
             return CustomUser.objects.get(id=id)
         except CustomUser.DoesNotExist:
-            raise CustomUser.DoesNotExist("User not found")
+            return None
+
+
+    #=========GET → anyone can view==========
     def get(self, request, id):
         user = self.get_user(id)
+        if not user:
+            return Response({"error": "User not found"}, status=404)
+
         serializer = UserSerializer(user)
         return Response(serializer.data, status=200)
 
-        
-    #=========PUT → Full update by ID==========
+
+    #=========CHECK OWNER==========
+    def check_owner(self, request, id):
+        if not request.user.is_authenticated:
+            return Response({"error": "Authentication required"}, status=401)
+
+        if request.user.id != int(id):    # <-- MAIN FIX
+            return Response({"error": "You cannot modify another user"}, status=403)
+
+        return None   # means OK
+
+
+    #=========PUT==========
     def put(self, request, id):
+        # owner check
+        owner_check = self.check_owner(request, id)
+        if owner_check:
+            return owner_check
+
         user = self.get_user(id)
         if not user:
             return Response({"error": "User not found"}, status=404)
@@ -71,14 +99,17 @@ class UserDetailAPIView(APIView):
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(
-                {"message": "User updated successfully", "data": serializer.data},
-                status=200
-            )
+            return Response({"message": "Updated", "data": serializer.data}, status=200)
+
         return Response(serializer.errors, status=400)
 
-    #=========PATCH → Partial update by ID============
+
+    #=========PATCH==========
     def patch(self, request, id):
+        owner_check = self.check_owner(request, id)
+        if owner_check:
+            return owner_check
+
         user = self.get_user(id)
         if not user:
             return Response({"error": "User not found"}, status=404)
@@ -86,21 +117,23 @@ class UserDetailAPIView(APIView):
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(
-                {"message": "User partially updated", "data": serializer.data},
-                status=200
-            )
+            return Response({"message": "Partially updated", "data": serializer.data}, status=200)
+
         return Response(serializer.errors, status=400)
 
-    #=========DELETE → delete user by ID==========
+
+    #=========DELETE==========
     def delete(self, request, id):
+        owner_check = self.check_owner(request, id)
+        if owner_check:
+            return owner_check
+
         user = self.get_user(id)
         if not user:
             return Response({"error": "User not found"}, status=404)
 
         user.delete()
-        return Response({"message": "User deleted successfully"}, status=200)
-
+        return Response({"message": "User deleted"}, status=200)
 
 #============Active User API When Activation Link Clicked=============
 User = get_user_model()
