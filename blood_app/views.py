@@ -5,6 +5,7 @@ from rest_framework import status
 from .models import BloodRequest, DonationHistory
 from .serializers import BloodRequestSerializer, DonationHistorySerializer
 
+#My Request API
 class MyRequestAPIView(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -18,7 +19,7 @@ class MyRequestAPIView(APIView):
             "data":serializer.data
         },status=status.HTTP_200_OK)
 
-
+#Incoming Request API
 class IncomingRequestAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -33,7 +34,7 @@ class IncomingRequestAPIView(APIView):
             "data":serializer.data
         }, status=status.HTTP_200_OK)
     
-
+#Donation API
 class MyDonationHistoryAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -47,7 +48,7 @@ class MyDonationHistoryAPIView(APIView):
             "data":serializer.data
         }, status=status.HTTP_200_OK)
     
-
+#Blood Request API
 class AllBloodRequestAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -62,7 +63,7 @@ class AllBloodRequestAPIView(APIView):
             status=status.HTTP_200_OK
         )
 
-
+#Create Blood Request API
 class CreateBloodRequestAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -80,7 +81,7 @@ class CreateBloodRequestAPIView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
+#Accept Blood Request API
 class AcceptBloodRequestAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
