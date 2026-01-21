@@ -48,6 +48,7 @@ MIDDLEWARE = [
 
 # ================= CORS =================
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # ================= URL / TEMPLATES =================
 ROOT_URLCONF = "blood_bank.urls"
