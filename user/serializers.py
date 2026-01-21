@@ -3,6 +3,7 @@ from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
 from djoser.serializers import UserSerializer as BaseUserSerializer
 from .models import CustomUser
 
+
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -13,7 +14,7 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
             "availability"
         ]
 
-        
+
 class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
         model = CustomUser
@@ -28,27 +29,12 @@ class UserCreateSerializer(BaseUserCreateSerializer):
             "blood_group",
             "availability",
             "password",
+            "re_password",
         ]
-
-    def create(self, validated_data):
-        user = CustomUser(
-            email=validated_data["email"],
-            first_name=validated_data.get("first_name", ""),
-            last_name=validated_data.get("last_name", ""),
-            phone_number=validated_data.get("phone_number"),
-            address=validated_data.get("address"),
-            age=validated_data.get("age"),
-            blood_group=validated_data.get("blood_group"),
-            availability=validated_data.get("availability", True),
-        )
-        user.set_password(validated_data["password"]) 
-        user.save()
-        return user
-
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta :
+    class Meta:
         model = CustomUser
         fields = [
             'id',
@@ -63,7 +49,8 @@ class UserSerializer(serializers.ModelSerializer):
             'last_donation',
             'is_active',
         ]
-        read_only_fields = ['id','is_active']
+        read_only_fields = ['id', 'is_active']
+
 
 class DonorSerializer(serializers.ModelSerializer):
     class Meta:
