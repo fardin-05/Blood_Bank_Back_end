@@ -30,6 +30,22 @@ class UserCreateSerializer(BaseUserCreateSerializer):
             "password",
         ]
 
+    def create(self, validated_data):
+        user = CustomUser(
+            email=validated_data["email"],
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
+            phone_number=validated_data.get("phone_number"),
+            address=validated_data.get("address"),
+            age=validated_data.get("age"),
+            blood_group=validated_data.get("blood_group"),
+            availability=validated_data.get("availability", True),
+        )
+        user.set_password(validated_data["password"]) 
+        user.save()
+        return user
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta :

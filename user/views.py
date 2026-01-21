@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from .permission import IsOwner
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.contrib.auth import get_user_model
 from djoser.utils import decode_uid
 from .serializers import UserSerializer, UserProfileUpdateSerializer, DonorSerializer
@@ -35,6 +35,7 @@ class UserProfileUpdateAPIView(APIView):
 
 
 class UserListAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwner]
     def get(self, request):
         users = CustomUser.objects.all()
         serializer = UserSerializer(users, many=True)
@@ -52,81 +53,53 @@ class UserListAPIView(APIView):
 
 
 class UserDetailAPIView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwner]
 
-    def get_user(self, id):
+    def get_object(self, id):
         try:
             return CustomUser.objects.get(id=id)
         except CustomUser.DoesNotExist:
             return None
-    
 
-    # Anyone can view
     def get(self, request, id):
-        user = self.get_user(id)
+        user = self.get_object(id)
         if not user:
-            return Response({"error": "User not found"}, status=404)
-
+            return Response({"error":"User not found"}, status=404)
         serializer = UserSerializer(user)
-        return Response(serializer.data, status=200)
+        return Response(serializer.data)
 
-    # ---- OWNER CHECK ----
-    def only_owner(self, request, user):
-        if not request.user.is_authenticated:
-            return Response({"error": "Authentication required"}, status=401)
-
-        if request.user.id != user.id:
-            return Response({"error": "You cannot modify another user's data"}, status=403)
-
-        return None
-
-
-    # UPDATE (PUT)
     def put(self, request, id):
-        user = self.get_user(id)
+        user = self.get_object(id)
         if not user:
-            return Response({"error": "User not found"}, status=404)
+            return Response({"error":"User not found"}, status=404)
 
-        # 🔥 MAIN CHECK
-        owner = self.only_owner(request, user)
-        if owner:
-            return owner
-
+        self.check_object_permissions(request, user)  # 🔥 check owner
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "User updated", "data": serializer.data}, status=200)
+            return Response(serializer.data)
         return Response(serializer.errors, status=400)
 
-    # PARTIAL UPDATE (PATCH)
     def patch(self, request, id):
-        user = self.get_user(id)
+        user = self.get_object(id)
         if not user:
-            return Response({"error": "User not found"}, status=404)
+            return Response({"error":"User not found"}, status=404)
 
-        owner = self.only_owner(request, user)
-        if owner:
-            return owner
-
+        self.check_object_permissions(request, user)  # 🔥 check owner
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "User partially updated", "data": serializer.data}, status=200)
+            return Response(serializer.data)
         return Response(serializer.errors, status=400)
 
-    # DELETE
     def delete(self, request, id):
-        user = self.get_user(id)
+        user = self.get_object(id)
         if not user:
-            return Response({"error": "User not found"}, status=404)
+            return Response({"error":"User not found"}, status=404)
 
-        owner = self.only_owner(request, user)
-        if owner:
-            return owner
-
+        self.check_object_permissions(request, user)  # 🔥 check owner
         user.delete()
-        return Response({"message": "User deleted"}, status=200)
-
+        return Response({"message":"User deleted"})
 
 #============Active User API When Activation Link Clicked=============
 User = get_user_model()

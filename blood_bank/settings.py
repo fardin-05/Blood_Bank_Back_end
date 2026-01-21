@@ -111,9 +111,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': [
+    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ]
+    )
 }
 from datetime import timedelta
 SIMPLE_JWT = {
@@ -127,15 +127,14 @@ DJOSER = {
     "SEND_ACTIVATION_EMAIL": True,
     "SEND_CONFIRMATION_EMAIL": True,
 
-    "DOMAIN": "blood-bank-back-end.onrender.com",
-    "PROTOCOL": "https",
+    "DOMAIN": "localhost:5173",
+    "PROTOCOL": "http",
 
     "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
     "ACTIVATION_URL":  "activate/{uid}/{token}/",
 
     "SERIALIZERS": {
         "user": "user.serializers.UserSerializer",
-        "current_user": "user.serializers.UserSerializer",
         "user_create": "user.serializers.UserCreateSerializer",
     },
 }
