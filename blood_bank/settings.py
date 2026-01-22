@@ -143,15 +143,18 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 # ================= SWAGGER =================
-SWAGGER_SETTINGS = { 
+SWAGGER_SETTINGS = {
+    'DEFAULT_GENERATOR_CLASS': 'drf_yasg.generators.OpenAPISchemaGenerator',
     'SECURITY_DEFINITIONS': {
         'JWT': {
             'type': 'apiKey',
             'in': 'header',
             'name': 'Authorization',
             'description': 'Type: JWT <access_token>',
-            }
+        }
     },
+    'USE_SESSION_AUTH': False,
+    'JSON_EDITOR': True,
 }
 
 
