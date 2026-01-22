@@ -153,7 +153,7 @@ SWAGGER_SETTINGS = {
             'description': 'JWT <access_token>',
         }
     },
-    'USE_SESSION_AUTH': False, # এটি অনেক সময় ৫০০ এরর কমায়
+    'USE_SESSION_AUTH': False, 
     'JSON_EDITOR': True,
 }
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
