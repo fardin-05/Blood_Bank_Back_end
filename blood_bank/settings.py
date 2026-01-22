@@ -144,13 +144,17 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 # ================= SWAGGER =================
 SWAGGER_SETTINGS = {
-    "SECURITY_DEFINITIONS": {
-        "JWT": {
-            "type": "apiKey",
-            "in": "header",
-            "name": "Authorization",
-            "description": "JWT <access_token>",
+    'DEFAULT_GENERATOR_CLASS': 'drf_yasg.generators.OpenAPISchemaGenerator',
+    'SECURITY_DEFINITIONS': {
+        'JWT': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+            'description': 'JWT <access_token>',
         }
-    }
+    },
+    'USE_SESSION_AUTH': False, # এটি অনেক সময় ৫০০ এরর কমায়
+    'JSON_EDITOR': True,
 }
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+WHITENOISE_MANIFEST_STRICT = False
