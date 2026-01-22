@@ -1,14 +1,24 @@
-setuptools
+# --- Core Framework ---
 Django==4.2.10
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.1
-dj-database-url==2.1.0
-python-decouple==3.8
-django-cors-headers==4.3.1
 djoser==2.2.0
-drf-yasg==1.21.7
+
+# --- Database & Deployment ---
+dj-database-url==2.1.0
+psycopg[binary]==3.1.18
 gunicorn==21.2.0
-psycopg2-binary==2.9.9
 whitenoise==6.6.0
+python-decouple==3.8
+
+# --- API Documentation & Security ---
+drf-yasg==1.21.7
+setuptools
+django-cors-headers==4.3.1
 PyJWT==2.8.0
+cryptography==42.0.5
+
+# --- Utilities ---
 requests==2.31.0
+pytz==2024.1
+sqlparse==0.4.4
