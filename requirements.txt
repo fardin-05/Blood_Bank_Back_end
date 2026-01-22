@@ -6,7 +6,7 @@ djoser==2.2.0
 
 # --- Database & Deployment ---
 dj-database-url==2.1.0
-psycopg[binary]==3.1.18
+psycopg[binary]
 gunicorn==21.2.0
 whitenoise==6.6.0
 python-decouple==3.8
