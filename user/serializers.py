@@ -3,7 +3,7 @@ from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
 from djoser.serializers import UserSerializer as BaseUserSerializer
 from .models import CustomUser
 
-
+#==========User============
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -52,6 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'is_active']
 
 
+#=============Donor=============
 class DonorSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
