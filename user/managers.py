@@ -1,5 +1,8 @@
 from django.contrib.auth.base_user import BaseUserManager
+
+#============ Custom User Manager============
 class CustomUserManager(BaseUserManager):
+    
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('This Email Field Must be Set')
@@ -8,6 +11,7 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
+        
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff',True)
         extra_fields.setdefault('is_superuser',True)
