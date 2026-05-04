@@ -29,7 +29,6 @@ urlpatterns = [
     path('activate/<uid>/<token>/', ActiveUserAPIView.as_view(), name='user_activate'),
     path('user/',include('user.urls')),
 
-    #====Swagger UI=======
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
