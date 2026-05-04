@@ -4,7 +4,7 @@ import dj_database_url
 from datetime import timedelta
 import os
 
-# ================= BASE =================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("SECRET_KEY")
