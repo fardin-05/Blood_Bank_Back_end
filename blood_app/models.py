@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-#  ===============Blood Request Section================
+#  ===============Blood Request Section=================
 class BloodRequest(models.Model):
     STATUS_CHOICES = [
         ('Pending','Pending'),
